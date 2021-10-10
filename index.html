@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Recall Calculator</title>
+    <link rel="icon" type="image/png" href="png-transparent-red-circle-accuracy-and-precision-measurement-precision-and-recall-significant-figures-accuratezza-error-binary-classification.png">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    
+    <form name="formcalc">
+        <nav><h1 align="center">Precision Recall</h1><br><hr></nav>
+    <div id="precisionrecall" align="center">
+       
+        <label>True Positive (TP):</label><br><br><br>
+        <input placeholder="enter the true Positive" required type="number" name="txtnum1"><br><br><br>
+        <label>True Negative (TN):</label><br><br><br>
+        <input placeholder="enter the true Negative" required type="number" name="txtnum2"><br><br><br>
+        <label>False Positive(FP):</label><br><br><br>
+        <input placeholder="enter the false Positive" required type="number" name="txtnum3"><br><br><br>
+        <label>False Negative(FN):</label><br><br><br>
+        <input placeholder="enter the false Negative" type="number" name="txtnum4"><br><br><br>
+        <a href="#output"><input type="button" id="Calculate" value="Calculate" required onclick="precisionrecall()"></a>
+    <div id="output">
+        <u><h1>OUTPUT</h1></u>
+        <label>Precision(PPV):<br><br><br></label>
+        <input placeholder="Result of Precision" type="text" name="ppv"><br><br><br>
+        <label>Recall(RCL):<br><br><br></label>
+        <input placeholder="Result of Recall" type="text" name="rcl">
+        <br><br><br>
+        <label>MATHEWS CORELATION COEFFICIENT FORMULA:<br><br><br></label>
+        <input type="text" placeholder="MATHEWS CORELATION COEFFICIENT FORMULA:" name="mcc"><br><br><br>
+        <label>F1 (HORMONIC)</label><br><br><br>
+        <input type="text" placeholder="f1" name="f1"><br><br><br>
+        <label for="#">Cohens_kappa</label><br><br><br>
+        <input type="text" placeholder="Cohens_kappa" name="Cohens_kappa"><br><br><br>
+        <label>Accuaracy</label><br><br><br>
+        <input type="text" placeholder="Accuaracy" name="Accuaracy"> 
+    </div>      
+    </div>
+    </form>
+    <script type="text/javascript">
+       function precisionrecall()
+       {
+           var Tp ,Tn ,Fp ,Fn ,ppv ,rcl ,mmc ,f1 ,Po ,Pe ,Kappa; 
+           Tp= Number(document.formcalc.txtnum1.value);
+           Tn= Number(document.formcalc.txtnum2.value);
+           Fp= Number(document.formcalc.txtnum3.value);
+           Fn= Number(document.formcalc.txtnum4.value);
+           ppv= Tp/(Tp+Fp);
+           rcl= Tp/(Tp+Fn);
+           mcc = (Tn * Tp - Fn * Fp) / Math.sqrt((Tp + Fp) * (Tp + Fn) * (Tn + Fp) * (Tn + Fn));
+           f1 = 2 * (ppv * rcl) / (ppv + rcl);
+           Po = (Tp + Tn) / (Tp + Tn + Fp + Fn);
+           Pe = ((Tp + Fn) * (Tp + Fp) + (Fp + Tn) * (Fn + Tn)) / ((Tp + Tn + Fp + Fn) * (Tp + Tn + Fp + Fn))
+           Kappa = (Po - Pe) / (1 - Pe);
+           Acc = (Tp  + Tp)/(Tp + Tn + Fp + Fn);
+           document.formcalc.mcc.value=mcc;
+           document.formcalc.rcl.value=rcl;
+           document.formcalc.ppv.value=ppv;
+           document.formcalc.f1.value=f1;
+           document.formcalc.Cohens_kappa.value=Kappa;  
+           document.formcalc.Accuaracy.value=Acc;
+           return Tp ,Tn ,Fp ,Fn ,ppv ,rcl ,mmc ,f1 ,Po ,Pe ,Kappa,Acc;
+       }
+    </script>
+</body>
+</html>
