@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PDF with JavaScript</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <form id="inputForm">
+        <input type="text" id="userInput" name="userInput" placeholder="Enter some text">
+        <button type="submit">Generate PDF</button>
+    </form>
+
+    <script>
+        document.getElementById('inputForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const userInput = document.getElementById('userInput').value;
+
+            // Initialize jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add text to PDF
+            doc.text(`User Input: ${userInput}`, 10, 10);
+
+            // Save the PDF
+            doc.save('output.pdf');
+        });
+    </script>
+</body>
+</html>

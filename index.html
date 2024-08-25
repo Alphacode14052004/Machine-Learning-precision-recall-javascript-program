@@ -2,70 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precision Recall Calculator</title>
-    <link rel="icon" type="image/png" href="png-transparent-red-circle-accuracy-and-precision-measurement-precision-and-recall-significant-figures-accuratezza-error-binary-classification.png">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Metrics Report Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    
-    <form name="formcalc">
-        <nav><h1 align="center">Precision Recall</h1><br><hr></nav>
-        <div>Hello</div>
-    <div id="precisionrecall" align="center">
-       
-        <label>True Positive (TP):</label><br><br><br>
-        <input placeholder="enter the true Positive" required type="number" name="txtnum1"><br><br><br>
-        <label>True Negative (TN):</label><br><br><br>
-        <input placeholder="enter the true Negative" required type="number" name="txtnum2"><br><br><br>
-        <label>False Positive(FP):</label><br><br><br>
-        <input placeholder="enter the false Positive" required type="number" name="txtnum3"><br><br><br>
-        <label>False Negative(FN):</label><br><br><br>
-        <input placeholder="enter the false Negative" type="number" name="txtnum4"><br><br><br>
-        <a href="#output"><input type="button" id="Calculate" value="Calculate" required onclick="precisionrecall()"></a>
-    <div id="output">
-        <u><h1>OUTPUT</h1></u>
-        <label>Precision(PPV):<br><br><br></label>
-        <input placeholder="Result of Precision" type="text" name="ppv"><br><br><br>
-        <label>Recall(RCL):<br><br><br></label>
-        <input placeholder="Result of Recall" type="text" name="rcl">
-        <br><br><br>
-        <label>MATHEWS CORELATION COEFFICIENT FORMULA:<br><br><br></label>
-        <input type="text" placeholder="MATHEWS CORELATION COEFFICIENT FORMULA:" name="mcc"><br><br><br>
-        <label>F1 (HORMONIC)</label><br><br><br>
-        <input type="text" placeholder="f1" name="f1"><br><br><br>
-        <label for="#">Cohens_kappa</label><br><br><br>
-        <input type="text" placeholder="Cohens_kappa" name="Cohens_kappa"><br><br><br>
-        <label>Accuaracy</label><br><br><br>
-        <input type="text" placeholder="Accuaracy" name="Accuaracy"> 
-    </div>      
+    <div class="container">
+        <h1>Precision-Recall Metrics Report Generator</h1>
+        <div class="input-group">
+            <label for="tp">True Positives (TP):</label>
+            <input type="number" id="tp" value="50">
+        </div>
+        <div class="input-group">
+            <label for="fp">False Positives (FP):</label>
+            <input type="number" id="fp" value="10">
+        </div>
+        <div class="input-group">
+            <label for="tn">True Negatives (TN):</label>
+            <input type="number" id="tn" value="30">
+        </div>
+        <div class="input-group">
+            <label for="fn">False Negatives (FN):</label>
+            <input type="number" id="fn" value="5">
+        </div>
+        <button class="generate-btn" onclick="generateReport()">Generate PDF Report</button>
+        
+        <div id="results" class="results">
+            <!-- Results will be displayed here -->
+        </div>
     </div>
-    </form>
-    <script type="text/javascript">
-       function precisionrecall()
-       {
-           var Tp ,Tn ,Fp ,Fn ,ppv ,rcl ,mmc ,f1 ,Po ,Pe ,Kappa; 
-           Tp= Number(document.formcalc.txtnum1.value);
-           Tn= Number(document.formcalc.txtnum2.value);
-           Fp= Number(document.formcalc.txtnum3.value);
-           Fn= Number(document.formcalc.txtnum4.value);
-           ppv= Tp/(Tp+Fp);
-           rcl= Tp/(Tp+Fn);
-           mcc = (Tn * Tp - Fn * Fp) / Math.sqrt((Tp + Fp) * (Tp + Fn) * (Tn + Fp) * (Tn + Fn));
-           f1 = 2 * (ppv * rcl) / (ppv + rcl);
-           Po = (Tp + Tn) / (Tp + Tn + Fp + Fn);
-           Pe = ((Tp + Fn) * (Tp + Fp) + (Fp + Tn) * (Fn + Tn)) / ((Tp + Tn + Fp + Fn) * (Tp + Tn + Fp + Fn))
-           Kappa = (Po - Pe) / (1 - Pe);
-           Acc = (Tp  + Tp)/(Tp + Tn + Fp + Fn);
-           document.formcalc.mcc.value=mcc;
-           document.formcalc.rcl.value=rcl;
-           document.formcalc.ppv.value=ppv;
-           document.formcalc.f1.value=f1;
-           document.formcalc.Cohens_kappa.value=Kappa;  
-           document.formcalc.Accuaracy.value=Acc;
-           return Tp ,Tn ,Fp ,Fn ,ppv ,rcl ,mmc ,f1 ,Po ,Pe ,Kappa,Acc;
-       }
+
+    <script>
+        function calculateMetrics(TP, FP, TN, FN) {
+            const precision = TP / (TP + FP);
+            const recall = TP / (TP + FN);
+            const f1Score = 2 * (precision * recall) / (precision + recall);
+            const mccNumerator = (TP * TN) - (FP * FN);
+            const mccDenominator = Math.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN));
+            const mcc = mccNumerator / mccDenominator;
+            const total = TP + FP + TN + FN;
+            const observedAccuracy = (TP + TN) / total;
+            const expectedAccuracy = ((TP + FN) * (TP + FP) + (TN + FN) * (TN + FP)) / (total * total);
+            const cohensKappa = (observedAccuracy - expectedAccuracy) / (1 - expectedAccuracy);
+
+            return {
+                precision: precision || 0,
+                recall: recall || 0,
+                f1Score: f1Score || 0,
+                mcc: mcc || 0,
+                cohensKappa: cohensKappa || 0
+            };
+        }
+
+        function displayResults(metrics) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h2>Calculated Metrics</h2>
+                <p><strong>Precision:</strong> ${metrics.precision.toFixed(4)}</p>
+                <p><strong>Recall:</strong> ${metrics.recall.toFixed(4)}</p>
+                <p><strong>F1 Score:</strong> ${metrics.f1Score.toFixed(4)}</p>
+                <p><strong>MCC:</strong> ${metrics.mcc.toFixed(4)}</p>
+                <p><strong>Cohen's Kappa:</strong> ${metrics.cohensKappa.toFixed(4)}</p>
+            `;
+        }
+
+        function generatePDF(metrics) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text("Metrics Report", 20, 20);
+
+            doc.setFontSize(12);
+            doc.text(`Precision: ${metrics.precision.toFixed(4)}`, 20, 40);
+            doc.text(`Recall: ${metrics.recall.toFixed(4)}`, 20, 50);
+            doc.text(`F1 Score: ${metrics.f1Score.toFixed(4)}`, 20, 60);
+            doc.text(`MCC: ${metrics.mcc.toFixed(4)}`, 20, 70);
+            doc.text(`Cohen's Kappa: ${metrics.cohensKappa.toFixed(4)}`, 20, 80);
+
+            doc.save("metrics_report.pdf");
+        }
+
+        function generateReport() {
+            const TP = parseInt(document.getElementById('tp').value, 10);
+            const FP = parseInt(document.getElementById('fp').value, 10);
+            const TN = parseInt(document.getElementById('tn').value, 10);
+            const FN = parseInt(document.getElementById('fn').value, 10);
+
+            const metrics = calculateMetrics(TP, FP, TN, FN);
+            displayResults(metrics);
+            generatePDF(metrics);
+        }
     </script>
 </body>
 </html>
